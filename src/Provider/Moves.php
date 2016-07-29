@@ -8,13 +8,47 @@ use Psr\Http\Message\ResponseInterface;
 
 class Moves extends AbstractProvider
 {
-    public $domain = 'https://moves-app.com';
+    /**
+     * @var string
+     */
+    const BASE_MOVES_URL = 'https://moves-app.com';
 
-    public $apiDomain = 'https://api.moves-app.com';
+    /**
+     * @var string
+     */
+    const BASE_MOVES_API_URL = 'https://api.moves-app.com';
 
-    public $apiAuthVersion = 'v1';
+    /**
+     * @var string
+     */
+    protected $apiAuthVersion = 'v1';
 
-    public $apiVersion = '1.1';
+    /**
+     * @var string
+     */
+    protected $apiVersion = '1.1';
+
+    /**
+     * Constructs an OAuth 2.0 service provider.
+     *
+     * @param array $options An array of options to set on this provider.
+     *     Options include `clientId`, `clientSecret`, `redirectUri`, `state`, `apiVersion`.
+     *     Individual providers may introduce more options, as needed.
+     * @param array $collaborators An array of collaborators that may be used to
+     *     override this provider's default behavior. Collaborators include
+     *     `grantFactory`, `requestFactory`, `httpClient`, and `randomFactory`.
+     *     Individual providers may introduce more collaborators, as needed.
+     */
+    public function __construct(array $options = [], array $collaborators = [])
+    {
+        parent::__construct($options, $collaborators);
+
+        foreach ($options as $option => $value) {
+            if (property_exists($this, $option)) {
+                $this->{$option} = $value;
+            }
+        }
+    }
 
     /**
      * Get authorization url to begin OAuth flow
@@ -23,7 +57,7 @@ class Moves extends AbstractProvider
      */
     public function getBaseAuthorizationUrl()
     {
-        return $this->apiDomain . '/oauth/' . $this->apiAuthVersion . '/authorize';
+        return self::BASE_MOVES_API_URL . '/oauth/' . $this->apiAuthVersion . '/authorize';
     }
 
     /**
@@ -35,7 +69,7 @@ class Moves extends AbstractProvider
      */
     public function getBaseAccessTokenUrl(array $params)
     {
-        return $this->apiDomain . '/oauth/' . $this->apiAuthVersion . '/access_token';
+        return self::BASE_MOVES_API_URL . '/oauth/' . $this->apiAuthVersion . '/access_token';
     }
 
     /**
@@ -47,7 +81,7 @@ class Moves extends AbstractProvider
      */
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-        return $this->apiDomain . '/api/' . $this->apiVersion . '/user/profile?access_token=' . $token;
+        return self::BASE_MOVES_API_URL . '/api/' . $this->apiVersion . '/user/profile?access_token=' . $token;
     }
 
     /**
@@ -61,7 +95,7 @@ class Moves extends AbstractProvider
      */
     protected function getDefaultScopes()
     {
-        return ['activity'];
+        return ['default'];
     }
 
     /**
